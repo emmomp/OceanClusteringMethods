@@ -1,3 +1,17 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+cluster_utils.py
+Functions required for clustering of ocean data, produced for Boland et al (in prep).
+See https://github.com/emmomp/OceanClustering for details
+
+For more details on the UKESM1, see https://ukesm.ac.uk/cmip6/
+
+Created 2022
+@author: erin.atkinson@mail.utoronto.ca Erin Atkinson
+Maintained by emmomp@bas.ac.uk Emma J.D. Boland
+"""
+
 import fsspec
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
