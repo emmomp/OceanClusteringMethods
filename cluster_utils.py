@@ -21,6 +21,7 @@ import xarray as xr
 import zarr
 import pickle
 import cartopy
+import dask
 
 from sklearn.decomposition import PCA
 from sklearn.mixture import GaussianMixture
@@ -32,7 +33,7 @@ import scipy.stats as sts
 
 
 def retrieve_profiles(timeRange = slice('1965-01', '1994-12'), levSel=slice(100, 2000), maxLat = -30, mask = None, options = {}):
-  """
+    """
   Create an xarray.DataArray of the temperature-depth profiles in the Southern Ocean. 
   
   :param timeRange: a slice or list of the times 
@@ -43,9 +44,9 @@ def retrieve_profiles(timeRange = slice('1965-01', '1994-12'), levSel=slice(100,
   this function to return unstacked data. In this case, the parameter mask is ignored
   :return: xarray.DataArray with coordinates ['time', 'n', 'lev'] (['time', 'lat', 'lon', 'lev'] if options['raw'])
   
-  """
-  # options contains all the information to identify the data
-  options_default = {
+    """
+    # options contains all the information to identify the data
+    options_default = {
       'dataVariableId' : 'thetao',
       'dataSourceId' : 'UKESM1-0-LL',
       'experimentId' : 'historical',
@@ -53,45 +54,47 @@ def retrieve_profiles(timeRange = slice('1965-01', '1994-12'), levSel=slice(100,
       'memberId' : 'r1i1p1f2',
       'raw' : False
   }
-  options = {**options_default, **options}
+    options = {**options_default, **options}
 
-  # take the profiles from wherever
-  df = pd.read_csv('https://storage.googleapis.com/cmip6/cmip6-zarr-consolidated-stores.csv')
-  dfFilt = df[df.variable_id.eq(options['dataVariableId']) 
-  & df.source_id.eq(options['dataSourceId']) 
-  & df.table_id.eq(options['tableId']) 
-  & df.experiment_id.eq(options['experimentId']) 
-  & df.member_id.eq(options['memberId'])]
-  filesRaw = [xr.open_zarr(fsspec.get_mapper(item), consolidated=True) for item in dfFilt.zstore.values]
+    # take the profiles from wherever
+    df = pd.read_csv('https://storage.googleapis.com/cmip6/cmip6-zarr-consolidated-stores.csv')
+    dfFilt = df[df.variable_id.eq(options['dataVariableId']) 
+    & df.source_id.eq(options['dataSourceId']) 
+    & df.table_id.eq(options['tableId']) 
+    & df.experiment_id.eq(options['experimentId']) 
+    & df.member_id.eq(options['memberId'])]
+    filesRaw = [xr.open_zarr(fsspec.get_mapper(item), consolidated=True) for item in dfFilt.zstore.values]
  
 
-  for (i, v) in enumerate(filesRaw): #Formatting dates into np.datetime64 format
-    startDateIterate = np.datetime64(v['time'].values[0],'M')
-    endDateIterate = np.datetime64(v['time'].values[-1],'M') + np.timedelta64(1,'M')
-    v['time']=('time', np.arange(startDateIterate, endDateIterate, dtype='datetime64[M]'))
-    v['time_bnds']=('time_bnds', np.arange(startDateIterate, endDateIterate, dtype='datetime64[M]')) 
-  fileSet = filesRaw[0] # just use one
+    for (i, v) in enumerate(filesRaw): #Formatting dates into np.datetime64 format
+        startDateIterate = np.datetime64(v['time'].values[0],'M')
+        endDateIterate = np.datetime64(v['time'].values[-1],'M') + np.timedelta64(1,'M')
+        v['time']=('time', np.arange(startDateIterate, endDateIterate, dtype='datetime64[M]'))
+        v['time_bnds']=('time_bnds', np.arange(startDateIterate, endDateIterate, dtype='datetime64[M]')) 
+    fileSet = filesRaw[0] # just use one
 
-  dataRaw = fileSet.thetao
+    dataRaw = fileSet.thetao
 
-  try:
-      dataRaw = dataRaw.rename({"latitude":"lat", "longitude":"lon"})
-  except:
-      pass
+    try:
+        dataRaw = dataRaw.rename({"latitude":"lat", "longitude":"lon"})
+    except:
+        pass
 
-  data = dataRaw.sel(lev=levSel, time=timeRange)
-  data = data.where(data.lat < maxLat, drop=True)
-  #data = data.squeeze()
-  if options['raw']:
+    with dask.config.set(**{'array.slicing.split_large_chunks': True}):
+        
+        data = dataRaw.sel(lev=levSel, time=timeRange)
+        data = data.where(data.lat < maxLat, drop=True)
+        #data = data.squeeze()
+        if options['raw']:
+            return data
+        data = data.stack(n=('i', 'j',))
+
+        # mask is a list of the values of n that are not NA
+        if mask is None:
+            mask = data.isel(time=0).dropna('n')['n'].values
+        data = data.sel(n=mask)
+
     return data
-  data = data.stack(n=('i', 'j',))
-
-  # mask is a list of the values of n that are not NA
-  if mask is None:
-    mask = data.isel(time=0).dropna('n')['n'].values
-  data = data.sel(n=mask)
-
-  return data
 
 
 def random_sample(data, N):
@@ -110,7 +113,7 @@ def random_sample(data, N):
 
   result = xr.apply_ufunc(
         func,
-        data,
+        data.chunk(dict(n=-1)),
         input_core_dims=[['n', 'lev']],
         output_core_dims=[['M', 'lev']],
         dask='parallelized',
