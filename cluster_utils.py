@@ -299,6 +299,29 @@ def gmm_score_samples(data_trans, gmm):
   
   return result
 
+def generate_trainingset(timeRange = slice('1965-01', '1994-12'), mask=None, options={},n_components=3,N=7000):
+    # Get profiles from googleapi CMIP6 data store
+    data = retrieve_profiles(timeRange,mask,options)
+    # Subset by chooseing N random profiles per month in the Southern Ocean
+    data_sampled = flt.random_sample(data, N).compute()
+    # Normalise the samples
+    data_sampled = flt.normalise_data(data_sampled, 'N') 
+    #Fit PCA model  
+    pca = flt.train_pca(data_sampled, n_components)   
+    # Transform training set to PCA space
+    data_trans = flt.pca_transform(data_sampled, pca).compute() 
+    return data_trans,pca
+
+def generate_fullset(timeRange = slice('1965-01', '1994-12'), mask=None, options={},n_components=3,pca=None):
+    # Get profiles from googleapi CMIP6 data store
+    data = retrieve_profiles(timeRange,mask,options)
+    data = data.chunk({'time': data.sizes['time'], 'n': 1024}).compute()
+    # Normalise the samples
+    data_sampled = flt.normalise_data(data_sampled, 'N') 
+    # Transform training set to PCA space using provided PCA model
+    data_trans = flt.pca_transform(data_sampled, pca).compute() 
+    return data_trans
+
 def count_area(data_classes, K):
   """
   Counts the number of assignments for each class, weighted by the latitude. The result is proportional to the total ocean surface area
