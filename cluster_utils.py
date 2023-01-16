@@ -22,6 +22,7 @@ import zarr
 import pickle
 import cartopy
 import dask
+from datetime import date
 
 from sklearn.decomposition import PCA
 from sklearn.mixture import GaussianMixture
@@ -298,9 +299,9 @@ def gmm_score_samples(data_trans, gmm):
 
     return result
 
-def generate_trainingset(timeRange = slice('1965-01', '1994-12'), mask=None, options={},n_components=3,N=7000):
+def generate_trainingset(timeRange = slice('1965-01', '1994-12'), mask=None, options={},n_components=3,N=7000,**kwargs):
     # Get profiles from googleapi CMIP6 data store
-    data = retrieve_profiles(timeRange=timeRange,mask=mask,options=options)
+    data = retrieve_profiles(timeRange=timeRange,mask=mask,options=options,**kwargs)
     # Subset by chooseing N random profiles per month in the Southern Ocean
     data_sampled = random_sample(data, N).compute()
     # Normalise the samples
@@ -445,7 +446,7 @@ def reorder(data_classes, inds):
     def func(arr):
         out = inds_r[arr.astype('int')]
         out[arr == -1] = -1
-    return out
+        return out
 
     result = xr.apply_ufunc(
         func,
@@ -462,15 +463,20 @@ def reorder(data_classes, inds):
 
     return result
 
-def modal_classes(data_classes):
+def modal_classes(data_classes,dims=['time',]):
   
-  def func(arr):
-    return sts.mode(arr)[0]
+    def func(arr):
+        return sts.mode(arr)[0]
 
-  return xr.apply_ufunc(
+    if len(dims)>1:
+        data_classes=data_classes.stack(indim=dims)
+    else:
+        data_classes=data_classes.rename({dims[0]:'indim'})
+
+    return xr.apply_ufunc(
         func,
         data_classes,
-        input_core_dims=[['time']],
+        input_core_dims=[['indim']],
         output_core_dims=[[]],
         dask='parallelized',
         output_dtypes=('float64',),
@@ -481,4 +487,18 @@ def modal_classes(data_classes):
         }
         )
   
-  
+def write_tonc(data,n_classes,m_id,name,path):
+
+    attrs={'contact':'emmomp@bas.ac.uk',
+       'references':'Model classification data from Boland et al 2023 (https://www.essoar.org/doi/10.1002/essoar.10511062.3)',
+       'date':'Created on '+date.today().strftime("%d/%m/%Y"),
+       'notes':'Data produced by analysis of UK-ESM historical potential temperature data'}
+    
+    data['nclasses']=n_classes
+    data['run']=m_id
+    data.attrs.update(attrs) 
+    data.name=name
+    data['description']='Classification of UK-ESM Potential Temperatature profiles using a GMM'
+    data.to_netcdf('{}/{}.nc'.format(path,name))
+    print('{} written to {}/{}.nc'.format(name,path,name))
+    return
