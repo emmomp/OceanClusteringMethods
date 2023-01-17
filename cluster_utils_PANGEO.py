@@ -300,7 +300,7 @@ def gmm_score_samples(data_trans, gmm):
 
 def generate_trainingset(timeRange = slice('1965-01', '1994-12'), mask=None, options={},n_components=3,N=7000,**kwargs):
     # Get profiles from googleapi CMIP6 data store
-    data = retrieve_profiles_JASMIN(timeRange=timeRange,mask=mask,options=options,**kwargs)
+    data = retrieve_profiles(timeRange=timeRange,mask=mask,options=options,**kwargs)
     # Subset by chooseing N random profiles per month in the Southern Ocean
     data_sampled = random_sample(data, N).compute()
     # Normalise the samples
