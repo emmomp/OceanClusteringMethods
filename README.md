@@ -13,7 +13,7 @@ TO COME
 ## Steps to reproduce the paper's figures (will over-write data in [figures/](figures/))
 
 To reproduce the paper's figures, follow these steps:
-- Clone the repository
+- Clone this repository
 - Install necessary libraries (see requirements above).
 - Run the Figure_*.ipynb notebooks.
 
@@ -21,7 +21,7 @@ To reproduce the paper's figures, follow these steps:
 
 - Access the UK-ESM1.0 CMIP6 data archive is required, for example through the [UK CEDA archive](https://www.ceda.ac.uk/) or the [Google Cloud Archive](https://console.cloud.google.com/marketplace/product/noaa-public/cmip6)
 - Install necessary libraries (see requirements above)
-- Repository 
+- Clone this repository 
 - Run the Step1_... and Step2_... notebooks
 
 ### Further details
