@@ -429,7 +429,7 @@ def match_spatial(data_classes, data_classes_ref, n_classes):
 
 def temp_sort(data_classes, avg, arg=False):
     """
-    Returns a new array of class assignnments, with the classes now ordered by mean value of the first pca component
+    Returns a new array of class assignnments, with the classes now ordered by mean temp of the shallowest depth level
     """
     top_mean = np.array([i['mean'][0] for i in avg])
     inds = np.argsort(top_mean)
