@@ -6,6 +6,13 @@ Feel free to use or reproduce the code and figures but please attribute as outli
 
 E Boland Feb 2023 [emmomp@bas.ac.uk](mailto:emmomp@bas.ac.uk)
 
+## Directory Contents
+
+- Jones2019_data: Contains csv files with the data for the mean classes profiles from [Jones et al. (2019)](https://doi.org/10.1029/2018JC014629), required to reproduce Figure 3 from the paper.
+- data: Contains metadata for the model in npy files and \fronts\ directory that contains the Orsi et al. mean front locations, required for most figures.
+- figures: Contains all figures from the paper.
+- model: File structure [ensemble_member]/[n_classes]. These contain obj files with details of the PCAs, GMMs, and associated statistics created by the python scikit-learn library, as well as netcdfs with classified data.
+
 ## Requirements
 
 TO COME
