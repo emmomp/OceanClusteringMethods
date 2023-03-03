@@ -4,7 +4,7 @@ This repositary contains python code and notebooks to accompany the manuscript "
 
 Feel free to use or reproduce the code and figures but please attribute as outlined in the license.
 
-E Boland Feb 2023 [emmomp@bas.ac.uk](mailto:emmomp@bas.ac.uk)
+E Boland Mar 2023 [emmomp@bas.ac.uk](mailto:emmomp@bas.ac.uk)
 
 ## Directory Contents
 
