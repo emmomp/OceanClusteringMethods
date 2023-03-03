@@ -2,12 +2,12 @@
 # -*- coding: utf-8 -*-
 """
 cluster_utils.py
-Functions required for clustering of ocean data, produced for Boland et al (in prep).
-See https://github.com/emmomp/OceanClustering for details
+Functions required for clustering of ocean data, produced for Boland et al 2023 (doi to follow).
+See https://github.com/emmomp/OceanClusteringMethods for details
 
 For more details on the UKESM1, see https://ukesm.ac.uk/cmip6/
 
-Created 2022
+Created 2023
 @author: erin.atkinson@mail.utoronto.ca Erin Atkinson
 Maintained by emmomp@bas.ac.uk Emma J.D. Boland
 """
