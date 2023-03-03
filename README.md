@@ -15,7 +15,18 @@ E Boland Feb 2023 [emmomp@bas.ac.uk](mailto:emmomp@bas.ac.uk)
 
 ## Requirements
 
-TO COME
+Cartopy==0.20.3
+dask==2022.7.0
+fsspec==2022.5.0
+matplotlib==3.5.2
+numpy==1.22.4
+pandas==1.4.3
+scikit_learn==1.2.1
+scipy==1.8.1
+xarray==2022.3.0
+zarr==2.12.0
+
+cluster_utils_JASMIN.py additionally requires [baspy](https://github.com/scotthosking/baspy). This makes it easy to load CMIP data from the CEDA holdings but is not strictly necessary - you could edit cluster_utils_JASMIN.py to add explicit directory locations of the CMIP data instead.
 
 ## Steps to reproduce the paper's figures (will over-write data in [figures/](figures/))
 
