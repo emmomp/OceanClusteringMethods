@@ -1,4 +1,4 @@
-# OceanClustering
+# OceanClusteringMethods
 
 This repositary contains python code and notebooks to accompany the manuscript "A heuristic method for detecting overfit in unsupervised classification of climate model data" Boland et al 2023 ([pre-print]()). The contents will allow for the reproduction of all figures in the paper, as well the fitting of Gaussian Mixture Models on the source data. See below for more details.
 
