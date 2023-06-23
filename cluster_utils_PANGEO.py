@@ -301,6 +301,11 @@ def gmm_score_samples(data_trans, gmm):
 def generate_trainingset(timeRange = slice('1965-01', '1994-12'), mask=None, options={},n_components=3,N=7000,**kwargs):
     # Get profiles from googleapi CMIP6 data store
     data = retrieve_profiles(timeRange=timeRange,mask=mask,options=options,**kwargs)
+    # Get future data if timeRange goes beyond 2014-12
+    if timeRange.stop>'2014-12':
+        options['experimentId']='ssp370'
+        data2 = retrieve_profiles(timeRange=timeRange,mask=mask,options=options,**kwargs)
+        data=xr.concat([data,data2],'time')
     # Subset by chooseing N random profiles per month in the Southern Ocean
     data_sampled = random_sample(data, N).compute()
     # Normalise the samples
