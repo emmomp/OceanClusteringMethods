@@ -1,11 +1,11 @@
 # OceanClusteringMethods
 [![DOI](https://zenodo.org/badge/609181408.svg)](https://zenodo.org/badge/latestdoi/609181408)
 
-This repositary contains python code and notebooks to accompany the manuscript "A heuristic method for detecting overfit in unsupervised classification of climate model data" Boland et al 2023 ([pre-print]()). The contents will allow for the reproduction of all figures in the paper, as well the fitting of Gaussian Mixture Models on the source data. See below for more details.
+This repositary contains python code and notebooks to accompany the manuscript "A heuristic method for detecting overfit in unsupervised classification of climate model data" [Boland et al 2023](https://doi.org/10.1017/eds.2023.40). The contents will allow for the reproduction of all figures in the paper, as well the fitting of Gaussian Mixture Models on the source data. See below for more details.
 
 Feel free to use or reproduce the code and figures but please attribute as outlined in the license.
 
-E Boland Mar 2023 [emmomp@bas.ac.uk](mailto:emmomp@bas.ac.uk)
+E Boland Dec 2023 [emmomp@bas.ac.uk](mailto:emmomp@bas.ac.uk)
 
 ## Directory Contents
 
